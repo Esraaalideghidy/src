@@ -1,0 +1,271 @@
+{% extends 'index.html' %}
+{% block content %}
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Checkout</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="single-product.html">Checkout</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap">
+        <div class="container">
+            
+            <div class="returning_customer" id="user-info">
+                <div class="check_title">
+                    <h2>Returning Customer? <a href="{% url 'login' %}">Click here to login</a></h2>
+                </div>
+            </div> 
+            <br>
+            {% comment %} <div class="cupon_area">
+                <div class="check_title">
+                    <h2>Have a coupon? <a href="#">Click here to enter your code</a></h2>
+                </div>
+                <input type="text" placeholder="Enter coupon code">
+                <a class="tp_btn" href="#">Apply Coupon</a>
+                </div> {% endcomment %}
+            <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-8" id="shipping-info">
+                        <h3>Billing Details</h3>
+                        <form class="row contact_form" id="form" >
+                            {% comment %} {% csrf_token %} {% endcomment %}
+                            
+                            {% comment %} <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="first" name="name" required>
+                                <span class="placeholder" data-placeholder="First name"></span>
+                            </div>
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="last" name="name" required>
+                                <span class="placeholder" data-placeholder="Last name"></span>
+                            </div> {% endcomment %}
+                       
+                            {% comment %} <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="number" name="number" required>
+                                <span class="placeholder" data-placeholder="Phone number"></span>
+                            </div>
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="email" name="compemailany">
+                                <span class="placeholder" data-placeholder="Email Address"></span>
+                            </div> {% endcomment %}
+                            {% if user.is_authenticated == False %}
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <span class="placeholder" data-placeholder="name"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="email" name="email" required>
+                                <span class="placeholder" data-placeholder="email"></span>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="address" name="address" required>
+                                <span class="placeholder" data-placeholder="Address line 01"></span>
+                            </div>
+                            
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="city" name="city" required>
+                                <span class="placeholder" data-placeholder="Town/City"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="state" name="state" required>
+                                <span class="placeholder" data-placeholder="State/County"></span>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Postcode/ZIP" required>
+                            </div>
+                            {% comment %} <div class="col-md-12 form-group">
+                                <div class="creat_account">
+                                    <input type="checkbox" id="f-option2" name="selector">
+                                    <label for="f-option2">Create an account?</label>
+                                </div>
+                            </div> {% endcomment %}
+                            {% comment %} <div class="col-md-12 form-group">
+                                <div class="creat_account">
+                                    <h3>Shipping Details</h3>
+                                    <input type="checkbox" id="f-option3" name="selector">
+                                    <label for="f-option3">Ship to a different address?</label>
+                                </div>
+                                <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
+                            </div> {% endcomment %}
+                            <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+                        </form>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                            <h2>Your Order</h2>
+                            <ul class="list">
+                                <li><a href="#">Product <span>Total</span></a></li>
+                                {% for item in items %}
+                                <li><a href="#">{{ item.product.name }}<span class="middle">x {{ item.quantity }}</span> <span class="last">${{ item.get_total }}</span></a></li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <ul class="list list_2">
+                                <li><a href="#">Subtotal <span>${{ order.get_cart_total }}</span></a></li>
+                                <li><a href="#">Shipping <span>Flat rate: $50.00</span></a></li>
+                                <li><a href="#">Total <span>${{ order.get_cart_total|add:50 }}</span></a></li>
+                            </ul>
+                            <br>
+                            <div class="box-element" id="payment-info" style="display: none;">
+                                    <h3>Shipping</h3>  
+                                    {% comment %} <button id="make-payment">Make payment</button>  {% endcomment %}
+                                    <!-- Set up a container element for the button -->
+                                    <div id="paypal-button-container"></div>
+                                {% comment %} <div class="payment_item">
+                                    <div class="radion_btn">
+                                        <input type="radio" id="f-option5" name="selector">
+                                        <label for="f-option5">Check payments</label>
+                                        <div class="check"></div>
+                                    </div>
+                                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County,
+                                        Store Postcode.</p>
+                                </div>
+                                <div class="payment_item active">
+                                    <div class="radion_btn">
+                                        <input type="radio" id="f-option6" name="selector">
+                                        <label for="f-option6">Paypal </label>
+                                        <img src="img/product/card.jpg" alt="">
+                                        <div class="check"></div>
+                                    </div>
+                                    <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal
+                                        account.</p>
+                                </div> {% endcomment %}
+                            </div>
+                            {% comment %} <div class="creat_account">
+                                <input type="checkbox" id="f-option4" name="selector">
+                                <label for="f-option4" required>I’ve read and accept the </label>
+                                <a href="#">terms & conditions*</a>
+                            </div> {% endcomment %}
+                            {% comment %} <a class="primary-btn" href="#">Proceed to Paypal</a> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================End Checkout Area =================-->
+    <script src="https://www.paypal.com/sdk/js?client-id=AT3A1Uv39YfUrQS24StZjpujIcgW_OUtNvy8vL1oHnEa5sLShm_am8I_X-ysGvkXHaLLKPBQb3F3B9xy&currency=USD"></script>
+
+    <script>
+        var total={{order.get_cart_total|add:50 }};
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: parseFloat(total).toFixed(2) // ← عدلي السعر هنا حسب الطلب
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    submitFormData()
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+    <script type="text/javascript">
+        var user = '{{request.user}}';
+        var shipping = '{{order.shipping}}'
+        if (shipping === 'False' || shipping === false || shipping == '0'){
+            document.getElementById('shipping-info').style.display = 'none';
+        } else {
+            document.getElementById('shipping-info').style.display = 'block';
+        }
+         if (user != 'AnonymousUser'){
+            document.getElementById('user-info').innerHTML = ''
+        }
+       {% comment %} if (user == 'AnonymousUser'){
+           //Show entire form if user is not logged in and shipping is true
+               document.getElementById('shipping-info').style.display = 'none';
+               //Hide payment if user is not logged in and shipping is true
+               document.getElementById('payment-info').style.display = 'none';
+       } {% endcomment %}
+       if (shipping == 'False' && user != 'AnonymousUser'){
+           //Hide entire form if user is logged in and shipping is false
+               document.getElementById('shipping-info').style.display = 'none';
+               //Show payment if logged in user wants to buy an item that does not require shipping
+               document.getElementById('payment-info').style.display = 'block';
+       }  
+
+         {% comment %} var form = document.getElementById('form')
+        csrftoken= form.getElementsByTagName("input")[0].value {% endcomment %}
+        {% comment %} console.log('NewToken:', form.getElementsByTagName("input")[0].value)  {% endcomment %}
+		form.addEventListener('submit', function(e){
+	    	e.preventDefault()
+	    	console.log('Form Submitted...')
+	    	document.getElementById('form-button').style.display = 'none';
+	    	document.getElementById('payment-info').style.display = 'block';
+	    })
+        {% comment %} document.getElementById('make-payment').addEventListener('click', function(e){
+	    	submitFormData()
+	    }) {% endcomment %}
+
+	    function submitFormData(){
+	    	console.log('Payment button clicked')
+            var userFormData = {
+                'total': total
+            }
+             // لو المستخدم مش عامل لوجن، خد الاسم والإيميل
+            if (user == 'AnonymousUser') {
+                userFormData.name = form.name.value;
+                userFormData.email = form.email.value;
+            }
+            var shippingInfo={
+                'address': null,
+                'city': null,
+                'state': null,
+                'zipcode':null
+            }
+            if (shipping != 'False'){
+                shippingInfo.address = form.address.value
+                shippingInfo.city = form.city.value
+                shippingInfo.state = form.state.value
+                shippingInfo.zipcode = form.zipcode.value
+            }
+        
+            
+        
+            console.log('Shipping Info:', shippingInfo)
+            console.log('User Info:', userFormData)
+            
+            var url = "/cart/process_order/"
+            fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken':csrftoken,
+                }, 
+                body:JSON.stringify({'form': userFormData,'shipping':shippingInfo}),
+                
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                alert('Transaction completed');  
+                // 🧹 تفريغ السلة من الكوكيز
+                const cart = {};
+                document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/';
+
+                // 🧭 التحويل لصفحة التأكيد
+                window.location.href = `/cart/confirmation/?transaction_id=${data.transaction_id}`;
+
+                })
+	    }
+    </script>
+
+
+    
+{% endblock content %}    

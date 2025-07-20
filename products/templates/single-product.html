@@ -1,0 +1,398 @@
+
+{% extends 'index.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Product Details Page</h1>
+					<nav class="d-flex align-items-center">
+						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
+						<a href="single-product.html">product-details</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Single Product Area =================-->
+	<div class="product_image_area">
+		<div class="container">
+			<div class="row s_product_inner">
+				<div class="col-lg-6">
+					<div class="s_Product_carousel">
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ product.img.url }}" alt="">
+						</div>
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ product.img.url }}" alt="">
+						</div>
+						<div class="single-prd-item">
+							<img class="img-fluid" src="{{ product.img.url }}" alt="">
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-5 offset-lg-1">
+					<div class="s_product_text">
+						<h3>{{ product.name }}</h3>
+						<h2>${{ product.price }}</h2>
+						<ul class="list">
+							<li><a class="active" href="#"><span>Category: </span>{{ product.category }}</a></li>
+							{% comment %} {% if product.stock >= 0 %}
+							<li><a href="#"><span>Availibility: </span> {{ product.stock }}</a></li>
+							{% else %}
+							<li><a href="#"><span>Availibility: </span> Out of Stock</a></li>
+							{% endif %} {% endcomment %}
+						</ul>
+						<p>{{ product.description }}</p>
+						
+						<div class="row">
+							<div class="item-option-select">
+								<h6>Choose Color</h6>
+								<select name="color" class="form-control" id="colorSelect" required>
+									<option value="" disabled selected>Select</option>	
+									{% comment %} اللون اللي موجود في view								 {% endcomment %}
+									{% for i in color %} 
+									<option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
+									{% endfor %}
+
+								</select>
+							</div>
+						</div>		
+						<br>
+						<div class="row">
+							<div class="item-option-select">
+								<h6>Choose Size</h6>
+								<select name="size" class="form-control" id="sizeSelect" required>
+									<option value="" disabled selected>Select</option>
+									
+									{% for i in size %}
+									<option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
+									{% endfor %}
+
+								</select>
+							</div>
+						</div>		
+					</div>
+						<br>
+
+					<div class="product_count">
+
+							<label for="qty">Quantity:</label>
+						
+							<input type="text" id="qty-{{ product.id }}" value="1" class="input-text qty" readonly>
+
+							<button type="button" class="increase items-count"
+									data-product="{{ product.id }}">
+							<i class="lnr lnr-chevron-up"></i>
+							</button>
+
+							<button type="button" class="reduced items-count"
+									data-product="{{ product.id }}">
+							<i class="lnr lnr-chevron-down"></i>
+							</button>
+
+							
+							
+						
+						</div>
+						<div class="card_area d-flex align-items-center">
+							<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn add-to-cart-btn">Add to Cart</button>
+							{% comment %} <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
+							<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a> {% endcomment %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--================End Single Product Area =================-->
+
+	<!--================Product Description Area =================-->
+	<section class="product_description_area">
+		<div class="container">
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+					 aria-selected="false">Specification</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+					 aria-selected="false">Comments</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
+					 aria-selected="false">Reviews</a>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+					<p>{{ product.description }}</p>
+				</div>
+				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+					<div class="table-responsive">
+						<table class="table">
+							<tbody>
+								<tr>
+									<td>
+										<h5>Width</h5>
+									</td>
+									<td>
+										<h5>{{ product.width }}mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Height</h5>
+									</td>
+									<td>
+										<h5>{{ product.height }}mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Depth</h5>
+									</td>
+									<td>
+										<h5>{{ product.Depth }}mm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Weight</h5>
+									</td>
+									<td>
+										<h5>{{ product.weight }}gm</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Quality checking</h5>
+									</td>
+									<td>
+										<h5>{{ product.Quality_checking }}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Freshness Duration</h5>
+									</td>
+									<td>
+										<h5>{{ product.Freshness_Duration }}days</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>When packeting</h5>
+									</td>
+									<td>
+										<h5>{{ product.When_packeting }}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Each Box contains</h5>
+									</td>
+									<td>
+										<h5>{{ product.Each_Box_contains }}pcs</h5>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+				<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							{% if comments %}
+							<div class="comment_list">
+								{% for comment in comments %}
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											<img src="{% if comment.user.profile.profile_picture %}{{ comment.user.profile.profile_picture.url }}{% else %}data:image/png;base64,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{% endif %}" width="50" height="50" alt="">
+
+										</div>
+										<div class="media-body">
+											{% if comment.user %}
+												<h4>{{ comment.user.username }}</h4>
+            								{% else %}
+												<h4>{{ comment.name }}</h4>
+            								{% endif %}
+											<h5>{{ comment.created_at|timesince }}</h5>
+											<a class="reply_btn" href="#">Reply</a>
+										</div>
+									</div>
+									<p>{{ comment.comment }}</p>
+								</div>
+								{% endfor %}
+								
+							</div>
+							{% else %}
+							<div class="review_item">
+								<p>No comments yet.</p>
+							</div>
+							{% endif %}
+						</div>
+						<div class="col-lg-6">
+							<div class="review_box">
+								<h4>Post a comment</h4>
+								
+								<form class="row contact_form" method="POST" action="{% url 'submit_comment' product.id %}"  novalidate="novalidate">
+									{% csrf_token %}
+									<div class="col-md-12">
+										<div class="form-group">
+
+											{% render_field form.name class="form-control" placeholder="Your Full name" %}
+											{% comment %} <input type="text" class="form-control" id="name" name="name" placeholder="Your Full name"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field form.email class="form-control" placeholder="Email Address" %}
+											{% comment %} <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field form.phone_number class="form-control" placeholder="Phone Number" %}
+											{% comment %} <input type="text" class="form-control" id="number" name="number" placeholder="Phone Number"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field form.comment class="form-control" placeholder="Message" %}
+											{% comment %} <textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
+									</div>
+								</form> 
+							
+											
+
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				<div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							{% comment %} <div class="row total_rate">
+								<div class="col-6">
+									<div class="box_total">
+										<h5>Overall</h5>
+										<h4>4.0</h4>
+										<h6>(03 Reviews)</h6>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="rating_list">
+										<h3>Based on 3 Reviews</h3>
+										<ul class="list">
+											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">1 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+										</ul>
+									</div>
+								</div>
+							</div> {% endcomment %}
+					
+						{% if reviews %}
+							<div class="review_list">
+								{% for r in reviews %}
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+																				
+											<img src="{% if r.user.profile.profile_picture %}{{ r.user.profile.profile_picture.url }}{% else %}data:image/png;base64,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{% endif %}" width="50" height="50" alt="">
+										</div>
+										<div class="media-body">
+											<h4>{{ r.name }}</h4>
+											{% comment %} {% for i in "12345"|slice:":r.rating"|make_list %}
+        										<i class="fa fa-star text-warning"></i>
+    										{% endfor %} {% endcomment %}
+										</div>
+									</div>
+									<p>{{ r.review }}</p>
+								</div>
+								{%endfor%}	
+							</div>
+						{% else %}
+							<div class="review_item">
+								<p>No reviews yet.</p>
+							</div>	
+						{% endif %}
+						</div>
+						<div class="col-lg-6">
+							<div class="review_box">
+								{% comment %} <h4>Add a Review</h4>
+								<p>Your Rating:</p>
+								<ul class="list">
+									
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+									<li><a href="#"><i class="fa fa-star"></i></a></li>
+								</ul>
+								<p>Outstanding</p> {% endcomment %}
+								<form method="POST" action="{% url 'submit_review' product.id %}">
+									{% csrf_token %}		
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field reviews_form.name class="form-control" placeholder="Your Full name" %}
+											{% comment %} <input type="text" class="form-control" id="name" name="name" placeholder="Your Full name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your Full name'"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field reviews_form.email class="form-control" placeholder="Email Address" %}
+											{% comment %} <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field reviews_form.phone_number class="form-control" placeholder="Phone Number" %}
+											{% comment %} <input type="text" class="form-control" id="number" name="number" placeholder="Phone Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone Number'"> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											{% render_field reviews_form.review class="form-control" placeholder="Review" %}
+											{% comment %} <textarea class="form-control" name="message" id="message" rows="1" placeholder="Review" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea></textarea> {% endcomment %}
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" value="submit" class="primary-btn">Submit Now</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Product Description Area =================-->
+{% endblock content %}
+
+

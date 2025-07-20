@@ -1,0 +1,84 @@
+{% extends 'index.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Register</h1>
+					<nav class="d-flex align-items-center">
+						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'register' %}">Register</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Login Box Area =================-->
+	<section class="login_box_area section_gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="login_box_img">
+						<img class="img-fluid" src="img/login.jpg" alt="">
+						<div class="hover">
+							<h4>New to our website?</h4>
+							<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
+							<a class="primary-btn" href="{% url 'login' %}">Already have account?</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="login_form_inner">
+						<h3>Register to enter</h3>
+						<form class="row login_form" method='POST' action="">
+							{% csrf_token %}
+							<div class="col-md-12 form-group">
+                                {% render_field form.email class="form-control" placeholder="username@mail.com" %}
+
+							</div>
+							<div class="col-md-12 form-group">
+								{% render_field form.username class="form-control" placeholder="Type Username Here" %}
+							</div>
+							<div class="col-md-12 form-group">
+                                {% render_field form.password1  placeholder="••••••••" class="form-control" %}
+							</div>
+							<div class="col-md-12 form-group">
+                                {% render_field form.password2  placeholder="••••••••" class="form-control" %}
+							</div>
+							<div class="col-md-12 form-group">
+                                <button type="submit" class="primary-btn">Sign Up</button>
+							</div>
+						</form>
+						{% if form.errors %}
+						<ul class="errorlist" style="color: red;">
+							{% for field in form %}
+							{% for error in field.errors %}
+								<li>{{ field.label }}: {{ error }}</li>
+							{% endfor %}
+							{% endfor %}
+							{% for error in form.non_field_errors %}
+							<li>{{ error }}</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+					</div>
+					{% if messages %}
+									<div>
+								{% for message in messages %}
+								<div class="alert alert-danger" style="background-color: #f44336; color: white; padding: 12px; border-radius: 8px; text-align: center;">
+									{{ message }}
+								</div>
+								{% endfor %}
+								</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Login Box Area =================-->
+{% endblock %}
