@@ -63,13 +63,11 @@
                                       <input type="text" name="qty" maxlength="12" value="{{ item.quantity }}"
                                              class="input-text qty" title="Quantity:" readonly>
                                   
-                                      <button type="button" class="increase items-count update-cart"
-                                              data-product="{{ item.product.id }}" data-action="add">
+                                      <button type="button" class="increase items-count update-cart" data-product="{{ item.product.id }}" data-action="add" data-color="{{ item.color }}" data-size="{{ item.size }}">
                                         <i class="lnr lnr-chevron-up"></i>
                                       </button>
                                   
-                                      <button type="button" class="reduced items-count update-cart"
-                                              data-product="{{ item.product.id }}" data-action="remove">
+                                      <button type="button" class="reduced items-count update-cart" data-product="{{ item.product.id }}" data-action="remove" data-color="{{ item.color }}" data-size="{{ item.size }}">
                                         <i class="lnr lnr-chevron-down"></i>
                                       </button>
                                   

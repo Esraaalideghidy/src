@@ -101,31 +101,56 @@ def category_detail(request, slug):
     })
 
 
-
-
 def single_product(request, pk):
     product = get_object_or_404(Product, id=pk)
-    # varitions =related_name
-    color = product.variations.filter(
+
+    # عرض الألوان والمقاسات المتاحة
+    color_variations = product.variations.filter(
         variation_category='color', is_active=True)
-    size = product.variations.filter(
+    size_variations = product.variations.filter(
         variation_category='size', is_active=True)
 
+    # نحاول نجيب اللون والمقاس من باراميتر الـ GET (لو اتبعتوا من الصفحة)
+    selected_color = request.GET.get('color')
+    selected_size = request.GET.get('size')
+
     quantity = 0
+
     if request.user.is_authenticated:
         order = Order.objects.filter(
             customer=request.user, complete=False).first()
         if order:
-            order_item = OrderItem.objects.filter(
-                order=order, product=product).first()
-            if order_item:
-                quantity = order_item.quantity
+            # لو في لون ومقاس، نفلتر بيهم
+            if selected_color and selected_size:
+                order_item = OrderItem.objects.filter(
+                    order=order,
+                    product=product,
+                    color=selected_color,
+                    size=selected_size
+                ).first()
+                if order_item:
+                    quantity = order_item.quantity
+            else:
+                # لو مفيش لون ومقاس، نجمع كل الكميات لنفس المنتج
+                order_items = OrderItem.objects.filter(
+                    order=order, product=product)
+                quantity = sum([item.quantity for item in order_items])
     else:
         cookie_data = cookieCart(request)
-        for item in cookie_data['items']:
-            if item['product']['id'] == product.id:
-                quantity = item['quantity']
-                break
+        if selected_color and selected_size:
+            for item in cookie_data['items']:
+                if (item['product']['id'] == product.id and
+                    item.get('color') == selected_color and
+                        item.get('size') == selected_size):
+                    quantity = item['quantity']
+                    break
+        else:
+            # لو مفيش لون ومقاس، نجمع كل الكميات
+            quantity = sum([
+                item['quantity'] for item in cookie_data['items']
+                if item['product']['id'] == product.id
+            ])
+
     black_friday_deals = Product.objects.filter(
         black_friday_deal=True,
         available_at__lte=timezone.now()
@@ -135,9 +160,20 @@ def single_product(request, pk):
     reviews = product.reviews.all()
     comment_form = CommentForm()
     review_form = ReviewForm()
-    return render(request, 'single-product.html', {'product': product, 'color': color,
-                                                   'size': size, 'quantity': quantity, 'comments': comments, 'reviews': reviews, 'form': comment_form, 'reviews_form': review_form, 'black_friday_deals': black_friday_deals})
 
+    return render(request, 'single-product.html', {
+        'product': product,
+        'color': color_variations,
+        'size': size_variations,
+        'quantity': quantity,
+        'selected_color': selected_color,
+        'selected_size': selected_size,
+        'comments': comments,
+        'reviews': reviews,
+        'form': comment_form,
+        'reviews_form': review_form,
+        'black_friday_deals': black_friday_deals
+    })
 # @login_required()
 def save_comment(request, product_id):
     product = get_object_or_404(Product, id=product_id)

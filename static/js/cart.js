@@ -1,21 +1,38 @@
 
 //الكود دا لصفحه الكارد عشان يزود علي طول
-var updateBtns = document.getElementsByClassName('update-cart')
+var updateBtns = document.getElementsByClassName('update-cart');
 
 for (let i = 0; i < updateBtns.length; i++) {
-	updateBtns[i].addEventListener('click', function(){
+	updateBtns[i].addEventListener('click', function () {
 		let productId = this.dataset.product;
 		let action = this.dataset.action;
 
-		console.log('Product ID:', productId, 'Action:', action);
+		// نحاول ناخد اللون والمقاس من الزر أولًا
+		let selectedColor = this.dataset.color || null;
+		let selectedSize = this.dataset.size || null;
+
+		// لو مش موجودين، نحاول نجيبهم من الفورم
+		if (!selectedColor || !selectedSize) {
+			let productElement = this.closest('.product-data');
+			if (productElement) {
+				let colorInput = productElement.querySelector('[name="color"]');
+				let sizeInput = productElement.querySelector('[name="size"]');
+
+				if (colorInput) selectedColor = colorInput.value;
+				if (sizeInput) selectedSize = sizeInput.value;
+			}
+		}
+
+		console.log('Product ID:', productId, 'Action:', action, 'Color:', selectedColor, 'Size:', selectedSize);
 
 		if (user === 'AnonymousUser') {
-			addCookieItem(productId, action);  // quantity will default to 1
+			addCookieItem(productId, action, 1, selectedColor, selectedSize);
 		} else {
-			updateUserOrder(productId, action);  // quantity will default to 1
+			updateUserOrder(productId, action, 1, selectedColor, selectedSize);
 		}
 	});
 }
+
 //الكود دا لصفحه تفاصيل البرودكت عشان احدد الكميه الاول وبعدين اعمل اضافه للكارد
 var addToCartBtns = document.getElementsByClassName('add-to-cart-btn');
 

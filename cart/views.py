@@ -246,6 +246,5 @@ def confirmation(request):
         'items': items,
         'shipping_address': shipping_address,
         'form': form,
-        'contact': contact,
     }
     return render(request, 'confirmation.html', context)
