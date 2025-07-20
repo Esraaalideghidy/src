@@ -1,6 +1,6 @@
 
 //الكود دا لصفحه الكارد عشان يزود علي طول
-var updateBtns = document.getElementsByClassName('update-cart');
+var updateBtns = document.getElementsByClassName('update-cart')
 
 for (let i = 0; i < updateBtns.length; i++) {
 	updateBtns[i].addEventListener('click', function () {
