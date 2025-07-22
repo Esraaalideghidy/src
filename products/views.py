@@ -31,8 +31,7 @@ def category(request):
         available_at__lte=timezone.now()
     ).order_by('-available_at')
     contact = ContactInfo.objects.first()
-    products = Product.objects.filter(
-        available_at__lte=timezone.now()).order_by('-id')
+    products = Product.objects.filter(category=category,available_at__lte=timezone.now()).order_by('-id')
     products_page = paginate_products(request, products, per_page=6)
     categories = Category.objects.all()
     categories_with_count = Category.objects.annotate(
@@ -77,8 +76,7 @@ def category_detail(request, slug):
     # else:
     #     products = Product.objects.filter(
     #         category=category).order_by('-created_at')
-    products = Product.objects.filter(
-        category=category).order_by('-created_at')
+    products = Product.objects.filter(category=category,available_at__lte=timezone.now()).order_by('-id')
     products_page = paginate_products(request, products, per_page=5)
     
 
