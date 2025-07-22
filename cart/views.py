@@ -44,56 +44,6 @@ def checkout(request):
     return render(request, 'checkout.html',context)
 
 
-def updateItem(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-
-    data = json.loads(request.body)
-    productId = data['productId']
-    action = data['action']
-
-    try:
-        quantity = int(data.get('quantity', 1))
-    except ValueError:
-        quantity = 1
-
-    selected_color = data.get('color')
-    selected_size = data.get('size')
-
-    if selected_color == 'None':
-        selected_color = None
-    if selected_size == 'None':
-        selected_size = None
-
-    user = request.user
-    product = Product.objects.get(id=productId)
-
-    # ✅ هنا التصحيح
-    order, created = Order.objects.get_or_create(customer=user, complete=False)
-
-    orderItem, created = OrderItem.objects.get_or_create(
-        order=order,
-        product=product,
-        color=selected_color,
-        size=selected_size
-    )
-
-    if action == 'delete':
-        deleted_count, _ = orderItem.delete()
-        return JsonResponse({'message': f'{deleted_count} item(s) deleted'}, safe=False)
-
-    if action == 'add':
-        orderItem.quantity += quantity
-    elif action == 'remove':
-        orderItem.quantity -= quantity
-
-    if orderItem.quantity <= 0:
-        orderItem.delete()
-    else:
-        orderItem.save()
-
-    return JsonResponse({'message': 'Item was updated'}, safe=False)
-
 
 def updateItem(request):
     if not request.user.is_authenticated:
@@ -122,11 +72,31 @@ def updateItem(request):
 
     orderItem = None
 
-    # 1️⃣ لو مفيش لون أو مقاس، ندمج على أي عنصر موجود لنفس المنتج
+    
     if selected_color is None and selected_size is None:
-        orderItem = OrderItem.objects.filter(order=order, product=product).first()
+        # مفيش لون ولا مقاس، ندور على العنصر اللي من غير لون ومقاس
+        orderItem = OrderItem.objects.filter(
+            order=order, product=product, color__isnull=True, size__isnull=True
+        ).first()
+
+
     else:
-        orderItem = OrderItem.objects.filter(order=order, product=product, color=selected_color, size=selected_size).first()
+        # فيه لون أو مقاس
+        # أولاً نحاول نلاقي عنصر مطابق بنفس اللون والمقاس
+        orderItem = OrderItem.objects.filter(
+            order=order, product=product, color=selected_color, size=selected_size
+        ).first()
+
+        if not orderItem:
+            # لو مفيش، نحاول نلاقي عنصر من غير لون/مقاس ونحدثه
+            blankItem = OrderItem.objects.filter(
+                order=order, product=product, color__isnull=True, size__isnull=True
+            ).first()
+            if blankItem:
+                blankItem.color = selected_color
+                blankItem.size = selected_size
+                orderItem = blankItem
+
 
     # 2️⃣ الحذف
     if action == 'delete':
