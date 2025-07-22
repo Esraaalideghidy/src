@@ -44,10 +44,6 @@ def checkout(request):
     return render(request, 'checkout.html',context)
 
 
-
-
-
-
 def updateItem(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
@@ -61,51 +57,94 @@ def updateItem(request):
     except ValueError:
         quantity = 1
 
-    selected_color = data.get('color') or None
-    selected_size = data.get('size') or None
+    selected_color = data.get('color')
+    selected_size = data.get('size')
+
+    if selected_color == 'None':
+        selected_color = None
+    if selected_size == 'None':
+        selected_size = None
 
     user = request.user
     product = Product.objects.get(id=productId)
-    order = Order.objects.filter(customer=user, complete=False).first()
 
-    if not order:
-        if action == 'add':
-            order = Order.objects.create(customer=user, complete=False)
-        else:
-            return JsonResponse({'message': 'No active order to update'}, safe=False)
+    # ✅ هنا التصحيح
+    order, created = Order.objects.get_or_create(customer=user, complete=False)
 
-    filters = {
-        'order': order,
-        'product': product,
-        'color__isnull': selected_color is None,
-        'size__isnull': selected_size is None,
-    }
+    orderItem, created = OrderItem.objects.get_or_create(
+        order=order,
+        product=product,
+        color=selected_color,
+        size=selected_size
+    )
 
-    if selected_color is not None:
-        filters['color'] = selected_color
-        filters.pop('color__isnull', None)
-
-    if selected_size is not None:
-        filters['size'] = selected_size
-        filters.pop('size__isnull', None)
-
-    orderItems = OrderItem.objects.filter(**filters)
-
-    # لو المستخدم ضغط "delete"
     if action == 'delete':
-        deleted_count, _ = orderItems.delete()
+        deleted_count, _ = orderItem.delete()
         return JsonResponse({'message': f'{deleted_count} item(s) deleted'}, safe=False)
 
-    # لو "add" أو "remove"
-    if orderItems.exists():
-        orderItem = orderItems.first()
+    if action == 'add':
+        orderItem.quantity += quantity
+    elif action == 'remove':
+        orderItem.quantity -= quantity
+
+    if orderItem.quantity <= 0:
+        orderItem.delete()
     else:
+        orderItem.save()
+
+    return JsonResponse({'message': 'Item was updated'}, safe=False)
+
+
+def updateItem(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+    data = json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
+    
+    try:
+        quantity = int(data.get('quantity', 1))
+    except ValueError:
+        quantity = 1
+
+    selected_color = data.get('color')
+    selected_size = data.get('size')
+
+    if selected_color == 'None':
+        selected_color = None
+    if selected_size == 'None':
+        selected_size = None
+
+    user = request.user
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=user, complete=False)
+
+    orderItem = None
+
+    # 1️⃣ لو مفيش لون أو مقاس، ندمج على أي عنصر موجود لنفس المنتج
+    if selected_color is None and selected_size is None:
+        orderItem = OrderItem.objects.filter(order=order, product=product).first()
+    else:
+        orderItem = OrderItem.objects.filter(order=order, product=product, color=selected_color, size=selected_size).first()
+
+    # 2️⃣ الحذف
+    if action == 'delete':
+        if orderItem:
+            deleted_count, _ = orderItem.delete()
+            return JsonResponse({'message': f'{deleted_count} item(s) deleted'}, safe=False)
+        else:
+            return JsonResponse({'message': 'No item found to delete'}, safe=False)
+
+    # 3️⃣ الإضافة أو الإنقاص
+    if not orderItem:
+        # في حالة عدم وجود عنصر، ننشئه
         orderItem = OrderItem.objects.create(
             order=order,
             product=product,
             color=selected_color,
             size=selected_size,
-            quantity=0
+            quantity=0  # هنعدل الكمية بعدين
         )
 
     if action == 'add':

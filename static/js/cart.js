@@ -1,27 +1,18 @@
 
 //الكود دا لصفحه الكارد عشان يزود علي طول
-var updateBtns = document.getElementsByClassName('update-cart')
+var updateBtns = document.getElementsByClassName('update-cart');
 
 for (let i = 0; i < updateBtns.length; i++) {
 	updateBtns[i].addEventListener('click', function () {
 		let productId = this.dataset.product;
 		let action = this.dataset.action;
 
-		// نحاول ناخد اللون والمقاس من الزر أولًا
-		let selectedColor = this.dataset.color || null;
-		let selectedSize = this.dataset.size || null;
+		let selectedColor = this.dataset.color;
+		let selectedSize = this.dataset.size;
 
-		// لو مش موجودين، نحاول نجيبهم من الفورم
-		if (!selectedColor || !selectedSize) {
-			let productElement = this.closest('.product-data');
-			if (productElement) {
-				let colorInput = productElement.querySelector('[name="color"]');
-				let sizeInput = productElement.querySelector('[name="size"]');
 
-				if (colorInput) selectedColor = colorInput.value;
-				if (sizeInput) selectedSize = sizeInput.value;
-			}
-		}
+
+
 
 		console.log('Product ID:', productId, 'Action:', action, 'Color:', selectedColor, 'Size:', selectedSize);
 
@@ -32,6 +23,7 @@ for (let i = 0; i < updateBtns.length; i++) {
 		}
 	});
 }
+
 
 //الكود دا لصفحه تفاصيل البرودكت عشان احدد الكميه الاول وبعدين اعمل اضافه للكارد
 var addToCartBtns = document.getElementsByClassName('add-to-cart-btn');
@@ -133,6 +125,8 @@ for (let i = 0; i < increaseBtns.length; i++) {
 	increaseBtns[i].addEventListener('click', function () {
 		let productId = this.dataset.product;
 		let input = document.getElementById('qty-' + productId);
+		if (!input) return;  // يمنع الخطأ لو مش لاقي الـ input
+
 		let qty = parseInt(input.value) || 1;
 		input.value = qty + 1;
 	});
@@ -142,9 +136,13 @@ for (let i = 0; i < decreaseBtns.length; i++) {
 	decreaseBtns[i].addEventListener('click', function () {
 		let productId = this.dataset.product;
 		let input = document.getElementById('qty-' + productId);
+		if (!input) return;
+
 		let qty = parseInt(input.value) || 1;
 		if (qty > 1) {
 			input.value = qty - 1;
+
+
 		}
 	});
 }
